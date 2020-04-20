@@ -17,9 +17,27 @@ def get_profiles():
     #print(files)
     return files
 
+def center(win):
+    """
+    centers a tkinter window
+    :param win: the root or Toplevel window to center
+    """
+    win.update_idletasks()
+    width = win.winfo_width()
+    frm_width = win.winfo_rootx() - win.winfo_x()
+    win_width = width + 2 * frm_width
+    height = win.winfo_height()
+    titlebar_height = win.winfo_rooty() - win.winfo_y()
+    win_height = height + titlebar_height + frm_width
+    x = win.winfo_screenwidth() // 2 - win_width // 2
+    y = win.winfo_screenheight() // 2 - win_height // 2
+    win.geometry('{}x{}+{}+{}'.format(width, height, x, y))
+    win.deiconify()
+
 def build_gui(profiles):
     root = tk.Tk()
     root.title("Pick a profile to run")
+    
     var1 = tk.IntVar(master=root, value=1)
     text = ''
     if len(sys.argv) > 1:
@@ -62,7 +80,14 @@ def build_gui(profiles):
                 padx=25,
                 pady=25)
     root.bind('<q>', lambda x: root.destroy())
+    center(root)
+    raise_above_all(root)
     root.mainloop()
+
+def raise_above_all(window):
+    window.attributes('-topmost', True)
+    window.after_idle(window.attributes,'-topmost',False)
+    window.after_idle(window.after, 1, window.wm_deiconify)
 
 def run_profile(profile):
     directory = os.path.join(os.environ["ProgramW6432"], 'Mozilla Firefox')
