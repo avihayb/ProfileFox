@@ -32,7 +32,7 @@ def center(win):
     x = win.winfo_screenwidth() // 2 - win_width // 2
     y = win.winfo_screenheight() // 2 - win_height // 2
     win.geometry('{}x{}+{}+{}'.format(width, height, x, y))
-    win.deiconify()
+    #win.deiconify()
 
 def build_gui(profiles):
     root = tk.Tk()
@@ -49,7 +49,9 @@ def build_gui(profiles):
               padx = 10,
               pady = 50,
               text=text).pack(side="top")
-    for pro in profiles:
+    frame = tk.Frame(root)
+    frame.pack(side="top")
+    for pro, index in zip(profiles, range(len(profiles))):
         #print(pro)
         def h(name):
             def i():
@@ -57,15 +59,21 @@ def build_gui(profiles):
                 if var1.get() == 1:
                     root.destroy()
             return i
+        def j(name):
+            def i():
+                subprocess.run(["cmd", "/c", "taskkill", '/F', '/IM', 'FF_' + name + '.exe'])
+            return i
 
-        tk.Button(root,
+        tk.Button(frame,
                     text=pro,
                     padx = 5,
                     pady = 5,
-                    command = h(pro)).pack(side="top",
-                                            fill=tk.X,
-                                            padx=25,
-                                            pady=5)
+                    command = h(pro)).grid(row = index, column = 0)
+        tk.Button(frame,
+                    text='☠',
+                    padx = 5,
+                    pady = 5,
+                    command = j(pro)).grid(row = index, column = 1)
     quit = tk.Button(root,
                     text="Q\u0332uit",
                     padx = 5,
@@ -81,13 +89,21 @@ def build_gui(profiles):
                 pady=25)
     root.bind('<q>', lambda x: root.destroy())
     center(root)
+    root.update()
     raise_above_all(root)
+    #root.update()
+    #root.grab_set()
+    #root.focus()
+    root.focus_set()
+    #root.focus_force()
+    #root.update()
+    root.after(3000,root.focus_set)
+    #root.after_idle(root.after, 1, root.wm_deiconify)
     root.mainloop()
 
 def raise_above_all(window):
     window.attributes('-topmost', True)
     window.after_idle(window.attributes,'-topmost',False)
-    window.after_idle(window.after, 1, window.wm_deiconify)
 
 def run_profile(profile):
     directory = os.path.join(os.environ["ProgramW6432"], 'Mozilla Firefox')
