@@ -20,6 +20,7 @@ def get_profiles():
 def build_gui(profiles):
     root = tk.Tk()
     root.title("Pick a profile to run")
+    var1 = tk.IntVar(master=root, value=1)
     text = ''
     if len(sys.argv) > 1:
         text = 'Opening URL: ' + sys.argv[1]
@@ -33,7 +34,11 @@ def build_gui(profiles):
     for pro in profiles:
         #print(pro)
         def h(name):
-            return lambda: run_profile(name)
+            def i():
+                run_profile(name)
+                if var1.get() == 1:
+                    root.destroy()
+            return i
 
         tk.Button(root,
                     text=pro,
@@ -44,14 +49,18 @@ def build_gui(profiles):
                                             padx=25,
                                             pady=5)
     quit = tk.Button(root,
-                    text="Quit",
+                    text="Q\u0332uit",
                     padx = 5,
                     pady = 5,
                     command = root.destroy)
     quit.pack(side="top",
                 fill=tk.X,
                 padx=25,
-                pady=50)
+                pady=25)
+    tk.Checkbutton(root, text="Close after selecting profile", variable=var1).pack(side="top",
+                fill=tk.X,
+                padx=25,
+                pady=25)
     root.bind('<q>', lambda x: root.destroy())
     root.mainloop()
 
@@ -62,6 +71,7 @@ def run_profile(profile):
     ff = os.path.join(directory, 'Firefox.exe')
     filename = 'FF_' + profile + '.exe'
     fullname = os.path.join(directory, filename)
+    print(fullname)
     if not os.path.exists(fullname):
         # ff = os.path.join(os.environ["ProgramW6432"], 'Mozilla Firefox', 'Firefox.exe')
         #os.link(ff,fullname)
