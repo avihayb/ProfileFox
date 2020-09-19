@@ -36,6 +36,7 @@ def center(win):
 
 def build_gui(profiles):
     root = tk.Tk()
+    root.tk.call('tk', 'scaling', 1.5)
     root.title("Pick a profile to run")
     
     var1 = tk.IntVar(master=root, value=1)
@@ -47,7 +48,7 @@ def build_gui(profiles):
     tk.Label(root, 
               justify=tk.CENTER,
               padx = 10,
-              pady = 50,
+              pady = 20,
               text=text).pack(side="top")
     frame = tk.Frame(root)
     frame.pack(side="top")
@@ -82,11 +83,11 @@ def build_gui(profiles):
     quit.pack(side="top",
                 fill=tk.X,
                 padx=25,
-                pady=25)
+                pady=5)
     tk.Checkbutton(root, text="Close after selecting profile", variable=var1).pack(side="top",
                 fill=tk.X,
                 padx=25,
-                pady=25)
+                pady=1)
     root.bind('<q>', lambda x: root.destroy())
     center(root)
     root.update()
@@ -106,27 +107,23 @@ def raise_above_all(window):
     window.after_idle(window.attributes,'-topmost',False)
 
 def run_profile(profile):
-    directory = os.path.join(os.environ["ProgramW6432"], 'Mozilla Firefox')
+    def makecopy(ff, filename):
+        admin.run_as_admin(['cmd','/C','copy', ff, fullname], debug=True)
+        sleep(5000)
+    directory = os.getcwd()
     # if not os.path.exists(directory):
     #     os.mkdir(directory)
     ff = os.path.join(directory, 'Firefox.exe')
     filename = 'FF_' + profile + '.exe'
     fullname = os.path.join(directory, filename)
     print(fullname)
-    if not os.path.exists(fullname):
-        # ff = os.path.join(os.environ["ProgramW6432"], 'Mozilla Firefox', 'Firefox.exe')
-        #os.link(ff,fullname)
-        #print (ff)
-        #subprocess.run(['cmd','/K','mklink', '/H', f'{fullname}', f'{ff}'])
-        #subprocess.run(['cmd','/K',f'echo /H "{fullname}" "{ff}"'])
-        admin.run_as_admin(['cmd','/K','copy', f'{ff}', f'{fullname}'], debug=True)
-        while not os.path.exists(fullname):
-            sleep(1)
-        #print('Created hardlink')
+    if not os.path.exists(fullname) or os.path.getmtime(fullname) < os.path.getmtime(ff):
+        makecopy(ff, filename)
     
-    subprocess.run([f'{fullname}','-P',f'{profile}','-foreground'] + sys.argv[1:])
+    subprocess.run([fullname, '-P', profile, '-foreground', '--no-remote'] + sys.argv[1:])
 
 if __name__ == "__main__":
-    profiles = get_profiles()    
+    profiles = get_profiles()
+    profiles.sort()   
     build_gui(profiles)
     pass
