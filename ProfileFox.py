@@ -5,6 +5,7 @@ import copy
 import subprocess
 import admin
 from time import sleep
+import math
 
 def get_profiles():
     directory = os.path.join(os.environ["LOCALAPPDATA"], 'Mozilla', 'Firefox', 'Profiles')
@@ -14,7 +15,7 @@ def get_profiles():
     files = list(filter(lambda x: os.path.isdir(os.path.join(directory, x)), files))
     #print(files)
     files = list(map(lambda x: x.split('.')[-1], files))
-    #files = list(range(20))
+    #files = list(range(60))
     #print(files)
     return files
 
@@ -37,7 +38,7 @@ def center(win):
 
 def build_gui(profiles):
     root = tk.Tk()
-    root.tk.call('tk', 'scaling', 1)
+    root.tk.call('tk', 'scaling', 2)
     root.title("Pick a profile to run")
     
     var1 = tk.IntVar(master=root, value=1)
@@ -57,6 +58,7 @@ def build_gui(profiles):
     frame = tk.Frame(root)
     frame.pack(side="top")
     #scroll.config(command=frame.yview)
+    rowPerCol = 13
     for pro, index in zip(profiles, range(len(profiles))):
         #print(pro)
         def h(name):
@@ -69,17 +71,20 @@ def build_gui(profiles):
             def i():
                 subprocess.run(["cmd", "/c", "taskkill", '/F', '/IM', 'FF_' + name + '.exe'])
             return i
-
+        vcol = int(index/rowPerCol) # the supercolumn number of the the two columns of the buttons
+        vrow = int(index%rowPerCol)
         tk.Button(frame,
                     text=pro,
                     padx = 5,
                     pady = 5,
-                    command = h(pro)).grid(row = index, column = 0)
+                  command=h(pro)).grid(row=vrow, column=vcol*3+0)
         tk.Button(frame,
                     text='☠',
                     padx = 5,
                     pady = 5,
-                    command = j(pro)).grid(row = index, column = 1)
+                  command=j(pro)).grid(row=vrow, column=vcol*3+1)
+    for index in range(math.ceil(len(profiles)/rowPerCol)-1): # -1 == no need for space after first column
+        frame.grid_columnconfigure(index*3+2, minsize=100)
     quit = tk.Button(root,
                     text="Q\u0332uit",
                     padx = 5,
@@ -113,8 +118,12 @@ def raise_above_all(window):
     window.after_idle(window.attributes,'-topmost',False)
 
 def run_profile(profile):
+    # admin.run_as_admin(
+    #     ['cmd', '/C', 'echo', 'ff fullname', '&', 'timeout', '5', '&&', 'exit'], debug=True) #exec test
+
     def makecopy(ff, filename):
-        admin.run_as_admin(['cmd','/C','copy', ff, fullname], debug=True)
+        admin.run_as_admin(
+            ['cmd', '/C', 'copy', ff, fullname, '&', 'timeout', '5','&&', 'exit'], debug=True)
         sleep(5000)
     directory = os.getcwd()
     # if not os.path.exists(directory):
