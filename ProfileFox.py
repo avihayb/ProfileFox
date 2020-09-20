@@ -14,6 +14,7 @@ def get_profiles():
     files = list(filter(lambda x: os.path.isdir(os.path.join(directory, x)), files))
     #print(files)
     files = list(map(lambda x: x.split('.')[-1], files))
+    #files = list(range(20))
     #print(files)
     return files
 
@@ -36,7 +37,7 @@ def center(win):
 
 def build_gui(profiles):
     root = tk.Tk()
-    root.tk.call('tk', 'scaling', 1.5)
+    root.tk.call('tk', 'scaling', 1)
     root.title("Pick a profile to run")
     
     var1 = tk.IntVar(master=root, value=1)
@@ -50,8 +51,12 @@ def build_gui(profiles):
               padx = 10,
               pady = 20,
               text=text).pack(side="top")
+    #scroll = tk.Scrollbar(root)
+    #scroll.pack(side=tk.LEFT, fill=tk.Y)
+    #frame = tk.Canvas(root, yscrollcommand=scroll.set)
     frame = tk.Frame(root)
     frame.pack(side="top")
+    #scroll.config(command=frame.yview)
     for pro, index in zip(profiles, range(len(profiles))):
         #print(pro)
         def h(name):
@@ -91,6 +96,7 @@ def build_gui(profiles):
     root.bind('<q>', lambda x: root.destroy())
     center(root)
     root.update()
+    #frame.config(scrollregion=(0, 0, 1000, 1000))
     raise_above_all(root)
     #root.update()
     #root.grab_set()
