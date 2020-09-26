@@ -15,7 +15,7 @@ def get_profiles():
     files = list(filter(lambda x: os.path.isdir(os.path.join(directory, x)), files))
     #print(files)
     files = list(map(lambda x: x.split('.')[-1], files))
-    files = list(range(30)) # inject "profiles"
+    #files = list(range(30)) # inject "profiles"
     #print(files)
     return files
 
