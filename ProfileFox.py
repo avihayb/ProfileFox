@@ -20,6 +20,8 @@ def get_profiles():
     return files
 
 def center(win):
+    #Sto... taken from https://stackoverflow.com/questions/3352918/how-to-center-a-window-on-the-screen-in-tkinter
+    # answer by Honest Abe. Asssumed to be under a public license
     """
     centers a tkinter window
     :param win: the root or Toplevel window to center
@@ -61,7 +63,7 @@ def build_gui(profiles):
                padx=20)
 
     #NOTE: hardcoded values.
-    #NOTE: Past avihay managed to fox it from the root window, but this is hardcoded here
+    #NOTE: Past avihay managed to fox it from the root window, but now this is hardcoded here
     window_static_height = 150 * scaling
     per_line_height = 27 * scaling
     #scroll.config(command=frame.yview)
