@@ -133,7 +133,7 @@ def run_profile(profile):
 
     def makecopy(ff, filename):
         admin.run_as_admin(
-            ['cmd', '/C', 'copy', ff, fullname, '&', 'timeout', '5','&&', 'exit'], debug=True)
+            ['cmd', '/C', 'copy', ff, fullname, '&', 'timeout', '5','&&', 'taskkill', '-f', '-im', 'profilefox.exe','&&', 'exit'], debug=True)
         sleep(5000)
     directory = os.getcwd()
     # if not os.path.exists(directory):
